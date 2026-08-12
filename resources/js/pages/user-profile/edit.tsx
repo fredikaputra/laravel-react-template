@@ -1,5 +1,6 @@
-import { Form, Head, Link, usePage } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import UserProfileController from '@/actions/App/Http/Controllers/UserProfileController';
+import { ClientLink } from '@/components/client-link';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
@@ -10,7 +11,7 @@ import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/user-profile';
 import { send } from '@/routes/verification';
-import type { BreadcrumbItem } from '@/types';
+import type { Auth, BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -26,7 +27,8 @@ export default function Edit({
     mustVerifyEmail: boolean;
     status?: string;
 }) {
-    const { auth } = usePage().props;
+    const { auth } = usePage<{ auth?: Auth }>().props;
+    const user = auth?.user;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -57,7 +59,7 @@ export default function Edit({
                                     <Input
                                         id="name"
                                         className="mt-1 block w-full"
-                                        defaultValue={auth.user.name}
+                                        defaultValue={user?.name ?? ''}
                                         name="name"
                                         required
                                         autoComplete="name"
@@ -77,7 +79,7 @@ export default function Edit({
                                         id="email"
                                         type="email"
                                         className="mt-1 block w-full"
-                                        defaultValue={auth.user.email}
+                                        defaultValue={user?.email ?? ''}
                                         name="email"
                                         required
                                         autoComplete="username"
@@ -91,19 +93,19 @@ export default function Edit({
                                 </div>
 
                                 {mustVerifyEmail &&
-                                    auth.user.email_verified_at === null && (
+                                    user?.email_verified_at === null && (
                                         <div>
                                             <p className="-mt-4 text-sm text-muted-foreground">
                                                 Your email address is
                                                 unverified.{' '}
-                                                <Link
+                                                <ClientLink
                                                     href={send()}
-                                                    as="button"
+                                                    component="user-email-verification-notification/create"
                                                     className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                                 >
                                                     Click here to resend the
                                                     verification email.
-                                                </Link>
+                                                </ClientLink>
                                             </p>
 
                                             {status ===

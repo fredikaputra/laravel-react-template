@@ -1,9 +1,18 @@
-import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { usePage } from '@inertiajs/react';
+import {
+    BookOpen,
+    CloudOff,
+    Folder,
+    LayoutGrid,
+    Menu,
+    Search,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ClientLink } from '@/components/client-link';
+import { DataSlot } from '@/components/data-slot';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -23,6 +32,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
     Tooltip,
     TooltipContent,
@@ -33,7 +43,7 @@ import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
 import { cn, toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import type { BreadcrumbItem, NavItem } from '@/types';
+import type { Auth, BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
@@ -64,10 +74,9 @@ const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
 export function AppHeader({ breadcrumbs = [] }: Props) {
-    const page = usePage();
-    const { auth } = page.props;
-    const getInitials = useInitials();
     const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
+    const getInitials = useInitials();
+    const { auth } = usePage<{ auth?: Auth }>().props;
 
     return (
         <>
@@ -99,7 +108,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     <div className="flex h-full flex-col justify-between text-sm">
                                         <div className="flex flex-col space-y-4">
                                             {mainNavItems.map((item) => (
-                                                <Link
+                                                <ClientLink
                                                     key={item.title}
                                                     href={item.href}
                                                     className="flex items-center space-x-2 font-medium"
@@ -108,7 +117,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                                         <item.icon className="h-5 w-5" />
                                                     )}
                                                     <span>{item.title}</span>
-                                                </Link>
+                                                </ClientLink>
                                             ))}
                                         </div>
 
@@ -134,13 +143,12 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         </Sheet>
                     </div>
 
-                    <Link
+                    <ClientLink
                         href={dashboard()}
-                        prefetch
                         className="flex items-center space-x-2"
                     >
                         <AppLogo />
-                    </Link>
+                    </ClientLink>
 
                     {/* Desktop Navigation */}
                     <div className="ml-6 hidden h-full items-center space-x-6 lg:flex">
@@ -151,7 +159,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                         key={index}
                                         className="relative flex h-full items-center"
                                     >
-                                        <Link
+                                        <ClientLink
                                             href={item.href}
                                             className={cn(
                                                 navigationMenuTriggerStyle(),
@@ -166,7 +174,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                                 <item.icon className="mr-2 h-4 w-4" />
                                             )}
                                             {item.title}
-                                        </Link>
+                                        </ClientLink>
                                         {isCurrentUrl(item.href) && (
                                             <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
                                         )}
@@ -217,18 +225,30 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     className="size-10 rounded-full p-1"
                                 >
                                     <Avatar className="size-8 overflow-hidden rounded-full">
-                                        <AvatarImage
-                                            src={auth.user.avatar}
-                                            alt={auth.user.name}
-                                        />
                                         <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(auth.user.name)}
+                                            <DataSlot
+                                                data="auth"
+                                                fallback={
+                                                    <Skeleton className="size-full rounded-full" />
+                                                }
+                                                rescue={
+                                                    <div className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                                                        <CloudOff className="size-4" />
+                                                    </div>
+                                                }
+                                            >
+                                                {auth?.user?.name
+                                                    ? getInitials(
+                                                          auth.user.name,
+                                                      )
+                                                    : ''}
+                                            </DataSlot>
                                         </AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="end">
-                                <UserMenuContent user={auth.user} />
+                                <UserMenuContent />
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>

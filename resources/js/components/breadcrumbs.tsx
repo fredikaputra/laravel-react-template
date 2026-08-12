@@ -1,5 +1,5 @@
-import { Link } from '@inertiajs/react';
 import { Fragment } from 'react';
+import { ClientLink } from '@/components/client-link';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -31,9 +31,9 @@ export function Breadcrumbs({
                                             </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
-                                                <Link href={item.href}>
+                                                <ClientLink href={item.href}>
                                                     {item.title}
-                                                </Link>
+                                                </ClientLink>
                                             </BreadcrumbLink>
                                         )}
                                     </BreadcrumbItem>

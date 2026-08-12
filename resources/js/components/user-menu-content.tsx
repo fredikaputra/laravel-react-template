@@ -1,22 +1,22 @@
-import { Link, router } from '@inertiajs/react';
+import { Deferred, Link, router, usePage } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
+import { ClientLink } from '@/components/client-link';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import { edit } from '@/routes/user-profile';
-import type { User } from '@/types';
+import type { Auth } from '@/types';
 
-type Props = {
-    user: User;
-};
-
-export function UserMenuContent({ user }: Props) {
+export function UserMenuContent() {
+    const { auth } = usePage<{ auth?: Auth }>().props;
+    const user = auth?.user;
     const cleanup = useMobileNavigation();
 
     const handleLogout = () => {
@@ -24,25 +24,52 @@ export function UserMenuContent({ user }: Props) {
         router.flushAll();
     };
 
+    const fallbackLabel = (
+        <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">Guest User</span>
+            <span className="truncate text-xs text-muted-foreground">
+                Profile unavailable
+            </span>
+        </div>
+    );
+
     return (
         <>
             <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <UserInfo user={user} showEmail={true} />
+                    <Deferred
+                        data="auth"
+                        fallback={
+                            <div className="flex flex-1 items-center gap-2">
+                                <Skeleton className="size-8 rounded-full" />
+                                <div className="grid flex-1 gap-1">
+                                    <Skeleton className="h-3.5 w-24" />
+                                    <Skeleton className="h-3 w-32" />
+                                </div>
+                            </div>
+                        }
+                        rescue={fallbackLabel}
+                    >
+                        {user ? (
+                            <UserInfo user={user} showEmail={true} />
+                        ) : (
+                            fallbackLabel
+                        )}
+                    </Deferred>
                 </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                    <Link
+                    <ClientLink
                         className="block w-full cursor-pointer"
                         href={edit()}
-                        prefetch
+                        component="user-profile/edit"
                         onClick={cleanup}
                     >
                         <Settings className="mr-2" />
                         Settings
-                    </Link>
+                    </ClientLink>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

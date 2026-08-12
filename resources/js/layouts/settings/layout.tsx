@@ -1,5 +1,5 @@
-import { Link } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
+import { ClientLink } from '@/components/client-link';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -11,25 +11,29 @@ import { show as showTwoFactor } from '@/routes/two-factor';
 import { edit } from '@/routes/user-profile';
 import type { NavItem } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
+const sidebarNavItems: (NavItem & { component: string })[] = [
     {
         title: 'Profile',
         href: edit(),
+        component: 'user-profile/edit',
         icon: null,
     },
     {
         title: 'Password',
         href: editPassword(),
+        component: 'user-password/edit',
         icon: null,
     },
     {
         title: 'Two-Factor Auth',
         href: showTwoFactor(),
+        component: 'user-two-factor-authentication/show',
         icon: null,
     },
     {
         title: 'Appearance',
         href: editAppearance(),
+        component: 'appearance/update',
         icon: null,
     },
 ];
@@ -65,12 +69,15 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                     'bg-muted': isCurrentOrParentUrl(item.href),
                                 })}
                             >
-                                <Link href={item.href}>
+                                <ClientLink
+                                    href={item.href}
+                                    component={item.component}
+                                >
                                     {item.icon && (
                                         <item.icon className="h-4 w-4" />
                                     )}
                                     {item.title}
-                                </Link>
+                                </ClientLink>
                             </Button>
                         ))}
                     </nav>

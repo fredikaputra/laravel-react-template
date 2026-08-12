@@ -59,6 +59,7 @@ export default function Login({
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
+                                            component="user-email-reset-notification/create"
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
@@ -101,7 +102,11 @@ export default function Login({
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
                                 Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
+                                <TextLink
+                                    href={register()}
+                                    component="user/create"
+                                    tabIndex={5}
+                                >
                                     Sign up
                                 </TextLink>
                             </div>

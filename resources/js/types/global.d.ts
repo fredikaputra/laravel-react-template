@@ -1,3 +1,5 @@
+/// <reference types="vite-plugin-pwa/client" />
+
 import type { Auth } from '@/types/auth';
 import type { FlashToast } from '@/types/ui';
 
@@ -7,9 +9,8 @@ declare module '@inertiajs/core' {
             toast?: FlashToast;
         };
         sharedPageProps: {
-            name: string;
+            appName: string;
             auth: Auth;
-            sidebarOpen: boolean;
             [key: string]: unknown;
         };
     }

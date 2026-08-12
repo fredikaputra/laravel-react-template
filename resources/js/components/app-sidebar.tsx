@@ -1,6 +1,6 @@
-import { Link } from '@inertiajs/react';
 import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
+import { ClientLink } from '@/components/client-link';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -44,9 +44,9 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <ClientLink href={dashboard()}>
                                 <AppLogo />
-                            </Link>
+                            </ClientLink>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
